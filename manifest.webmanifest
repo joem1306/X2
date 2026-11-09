@@ -1,0 +1,16 @@
+{
+  "id": "/X2/",
+  "name": "X2 — Mon journal",
+  "short_name": "X2",
+  "description": "Trois journées, à votre rythme. Un journal personnel sur votre appareil.",
+  "lang": "fr",
+  "start_url": "/X2/",
+  "scope": "/X2/",
+  "display": "standalone",
+  "background_color": "#f6f5fa",
+  "theme_color": "#f6f5fa",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

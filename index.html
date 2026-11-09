@@ -1,13 +1,83 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>X2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f5fa">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="X2">
+  <meta name="description" content="Votre journal personnel, simplement. Trois journées, sur votre appareil.">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>X2 — Mon journal</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="./css/app.css">
+  <link rel="stylesheet" href="./css/print.css">
+  <script type="module" src="./js/app.js"></script>
 </head>
 <body>
-  <h1>X2</h1>
-  <p>Mon application personnelle est en préparation.</p>
+  <a class="skip-link" href="#history-heading">Aller à l’historique</a>
+  <svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-glass" viewBox="0 0 24 24"><path d="m6 3 1.5 18h9L18 3ZM7 9h10M10 3v3"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3C10 7 5 11 5 15a7 7 0 0 0 14 0c0-4-5-8-7-12ZM9 15a3 3 0 0 0 3 3"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m4 16 12-12 4 4L8 20H4ZM13 7l4 4"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  </svg>
+  <div id="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="X2, accueil">x<span>2</span><i aria-hidden="true"></i></a>
+      <span class="topbar-note">Un peu d’attention à soi.</span>
+      <button id="options-button" class="icon-button" aria-label="Options et sauvegardes"><svg><use href="#i-more"/></svg></button>
+    </header>
+    <div id="storage-error" class="error-banner" role="alert" hidden><p id="storage-error-text"></p><button id="retry-storage" class="text-button">Réessayer</button></div>
+    <div id="update-banner" class="notice-banner" hidden><span>Une nouvelle version est prête.</span><button id="update-button" class="text-button">Mettre à jour</button></div>
+    <p id="loading" class="loading" role="status">Ouverture de votre journal…</p>
+    <main id="journal" hidden>
+      <div class="intro"><p class="eyebrow">MON JOURNAL</p><h1>Trois jours, à votre rythme.</h1><p class="muted">Consécutifs ou non. Vous choisissez.</p></div>
+      <nav id="day-tabs" class="day-tabs" aria-label="Journée à consulter"></nav>
+      <section class="day-section" aria-labelledby="day-heading">
+        <div class="day-heading-row"><div><p id="day-state" class="eyebrow"></p><h2 id="day-heading"></h2><p id="day-date" class="muted"></p></div><button id="date-button" class="quiet-button">Choisir la date</button></div>
+        <p id="day-guidance" class="subtle-note"></p>
+        <div class="actions" id="actions">
+          <button class="action action-main" data-kind="drink"><svg><use href="#i-glass"/></svg><span>Boisson</span><span class="action-plus" aria-hidden="true">+</span></button>
+          <button class="action action-main" data-kind="void"><svg><use href="#i-drop"/></svg><span>Miction</span><span class="action-plus" aria-hidden="true">+</span></button>
+          <button class="action action-sleep" data-kind="bedtime"><svg><use href="#i-moon"/></svg><span>Je me couche</span></button>
+          <button class="action action-sleep" data-kind="wake"><svg><use href="#i-sun"/></svg><span>Je me réveille</span></button>
+        </div>
+      </section>
+      <section class="history-section" aria-labelledby="history-heading"><div class="section-heading"><h2 id="history-heading" tabindex="-1">Historique</h2><span id="event-count" class="muted"></span></div><p id="night-note" class="subtle-note"></p><div id="history"></div></section>
+      <div class="completion"><p id="completion-note" class="muted"></p><button id="complete-button" class="quiet-button"></button></div>
+    </main>
+    <footer class="app-footer"><span class="privacy-dot" aria-hidden="true"></span><span>Vos données restent sur cet appareil.</span><button id="help-button" class="text-button">À savoir</button><p id="offline-status" role="status">Vérification du mode hors ligne…</p></footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="event-dialog" aria-labelledby="event-title">
+    <div class="dialog-heading"><h2 id="event-title"></h2><button type="button" class="icon-button close-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div>
+    <form id="event-form">
+      <p id="event-session" class="muted"></p>
+      <label for="event-time">Date et heure</label><input id="event-time" name="time" type="datetime-local" required step="60">
+      <p id="time-zone-note" class="field-hint"></p>
+      <div id="offset-field" hidden><label for="event-offset">Cette heure se produit deux fois</label><select id="event-offset"></select></div>
+      <div id="drink-fields"><label for="drink-type">Boisson</label><select id="drink-type"><option value="water">Eau</option><option value="coffee">Café</option><option value="tea">Thé</option><option value="herbal">Tisane</option><option value="other">Autre</option></select><div id="other-field" hidden><label for="drink-label">Préciser <span class="optional">(facultatif)</span></label><input id="drink-label" type="text" maxlength="80" autocomplete="off"></div></div>
+      <div id="volume-field"><label for="event-volume">Volume en ml</label><div class="input-unit"><input id="event-volume" type="number" inputmode="numeric" min="1" max="10000" step="1" autocomplete="off"><span aria-hidden="true">ml</span></div></div>
+      <div id="void-fields"><label for="event-urgency">Envie <span class="optional">(facultatif)</span></label><select id="event-urgency"><option value="">Non renseignée</option><option value="normal">Normale</option><option value="urgent">Envie pressante</option><option value="very_urgent">Urgence importante</option></select><label for="event-remarks">Remarques <span class="optional">(facultatif)</span></label><textarea id="event-remarks" rows="3" maxlength="500" placeholder="Une précision, si nécessaire…"></textarea></div>
+      <p id="sleep-hint" class="subtle-note" hidden></p>
+      <p id="event-error" class="form-error" role="alert" hidden></p>
+      <button id="save-event" class="primary-button" type="submit">Enregistrer</button>
+      <button id="delete-event" class="danger-button" type="button" hidden>Supprimer cet événement</button>
+    </form>
+  </dialog>
+  <dialog id="date-dialog" aria-labelledby="date-title"><div class="dialog-heading"><h2 id="date-title">Date de la journée</h2><button class="icon-button close-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div><form id="date-form"><label for="day-date-input">Date de début</label><input id="day-date-input" type="date" min="1900-01-01" max="2199-12-31" required><p class="field-hint">Chaque journée comprend aussi sa nuit suivante. Les trois dates peuvent être espacées.</p><p id="date-preserve-note" class="subtle-note" hidden>Corriger cette date conserve les dates et heures de tous les événements. Modifiez chaque événement si nécessaire.</p><p id="date-error" class="form-error" role="alert" hidden></p><button class="primary-button" type="submit">Enregistrer la date</button></form></dialog>
+  <dialog id="options-dialog" aria-labelledby="options-title"><div class="dialog-heading"><h2 id="options-title">Votre journal</h2><button class="icon-button close-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div><div class="menu-list"><button id="report-button"><strong>Exporter / imprimer le PDF</strong><span>Un seul rapport pour vos trois journées</span></button><button id="backup-button"><strong>Sauvegarder JSON</strong><span>Conserver une copie de toutes vos données</span></button><button id="restore-button"><strong>Restaurer JSON</strong><span>Remplacer le journal avec une sauvegarde</span></button></div><p class="subtle-note">Le navigateur peut effacer le stockage local. Sauvegardez régulièrement votre journal, surtout avant une mise à jour ou un changement d’appareil.</p><input id="restore-file" type="file" accept=".json,application/json" hidden><p id="restore-error" class="form-error" role="alert" hidden></p><div id="restore-preview" hidden><h3>Vérifier la sauvegarde</h3><p id="restore-summary"></p><p class="subtle-note">La restauration remplacera les trois journées actuelles. Cette opération ne peut pas être annulée sans votre sauvegarde actuelle.</p><button id="confirm-restore" class="primary-button">Remplacer mon journal</button><button id="cancel-restore" class="quiet-button">Annuler la restauration</button></div></dialog>
+  <dialog id="help-dialog" aria-labelledby="help-title"><div class="dialog-heading"><h2 id="help-title">Simplement, sur votre appareil.</h2><button class="icon-button close-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div><div class="help-content"><h3>Au fil de la journée</h3><p>Choisissez un jour, puis saisissez chaque boisson et miction. Le volume est à mesurer et à entrer en ml. Les heures proposées sont celles de votre appareil et restent modifiables.</p><h3>La nuit et le lendemain matin</h3><p>« Je me couche » marque le début de la nuit. « Je me réveille » correspond au réveil final, pas aux levers temporaires. Gardez le même jour sélectionné après minuit et pour la première miction du matin, puis terminez la journée vous-même.</p><p>Les mictions après le coucher et avant le réveil sont nocturnes. La première miction à partir du réveil est incluse dans le volume nocturne, mais pas dans le nombre de levers nocturnes. Cette convention est explicitée dans le PDF ; vérifiez les attentes de votre médecin.</p><h3>Installer sur iPhone</h3><p>Dans Safari : Partager → Sur l’écran d’accueil. Attendez l’indication « Disponible hors ligne » avant de couper Internet. L’installation et la première mise en cache nécessitent une connexion.</p><h3>Protéger votre copie</h3><p>Aucun compte, suivi ni envoi des saisies. Le journal n’est pas chiffré par X2 ; une personne ayant accès à cet appareil déverrouillé peut le consulter. Le navigateur peut effacer ses données. Les sauvegardes JSON et les PDF sont lisibles en clair. Le dossier choisi dans Fichiers peut être synchronisé par iCloud selon vos réglages.</p><button id="persist-button" class="quiet-button">Demander la conservation du stockage</button><p id="persist-status" class="field-hint" role="status"></p><p class="muted">X2 est un outil de saisie, sans diagnostic ni interprétation médicale.</p></div></dialog>
+  <dialog id="report-dialog" class="report-dialog" aria-labelledby="report-title"><div class="dialog-heading"><h2 id="report-title">Votre rapport</h2><button class="icon-button close-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div><p id="report-state" class="subtle-note"></p><p class="field-hint">Sur iPhone : touchez « Imprimer / enregistrer en PDF », agrandissez l’aperçu d’impression avec deux doigts, puis Partager → Enregistrer dans Fichiers. Le rapport contient les trois journées. Aucun envoi n’est effectué par X2.</p><button id="print-button" class="primary-button">Imprimer / enregistrer en PDF</button><div id="report-preview"></div></dialog>
+  <div id="print-report" aria-hidden="true"></div>
+  <noscript><p>X2 nécessite JavaScript pour enregistrer vos données localement.</p></noscript>
 </body>
 </html>
