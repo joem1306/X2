@@ -1,0 +1,11 @@
+node_modules/
+test-results/
+playwright-report/
+.DS_Store
+*.local
+
+# Local secrets and diary exports must never enter the repository.
+.env
+.env.*
+X2-sauvegarde-*.json
+*.pdf
